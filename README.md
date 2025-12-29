@@ -26,7 +26,7 @@ SELECT
 FROM orders
 WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30' AND shop_id IN ('A','B','C')
 GROUP BY user_id
-OEDER BY user_id
+OEDER BY user_id ASC
 ```
 
 
