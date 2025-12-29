@@ -1,5 +1,5 @@
 # TOP N 问题
-![Alt Text](TOP N.png)
+![Alt Text](https://github.com/Aeon0630/sql_-/blob/main/TOP%20N.png)
 ```ruby
 WITH province_user_stats AS(
   SELECT province, user_id, SUM(order_amount) AS total_amount, COUNT(order_id) AS order_count,
