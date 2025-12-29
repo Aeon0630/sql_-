@@ -38,3 +38,37 @@ user_login_info一张表：user_id  login_time
 (SELECT user_id,MIN(date(login_time)) AS first_login_date FROM user_login_info GROUP BY user_id)
 
 ```
+
+
+# 连续登录问题
+![Alt Text](https://github.com/Aeon0630/sql_-/blob/main/%E8%BF%9E%E7%BB%AD%E7%99%BB%E5%BD%95.png)
+```ruby
+WITH
+user_login_ranked AS(
+  SELECT
+    user_id, login_date, ROW_NUMBER() OVER(PARTITON user_id OERDER BY login_date) AS rk
+  FROM user_login_events
+  WHERE login_date BETWEEN '2025-01-01' AND '2025-12-31'
+)
+user_login_groups AS(
+  SELECT
+    user_id, login_date, DATE_SUB(login_date, INTERVAL rk DAY) AS group_id
+  FROM user_login_ranked
+)
+continuous_days AS(
+  SELECT
+    user_id, group_id, MIN(login_date) AS first_date, MAX(login_date) AS last_date, COUNT(*) AS continuous_days
+  FROM user_login_groups
+  GROUP BY user_id, group_id
+)
+user_max_days AS(
+  SELECT
+    user_id, MAX(continuous_days) AS max_days
+  FROM continuous_days
+  GROUP BY user_id
+)
+SELECT user_id, max_days
+FROM user_max_days
+ORDER BY max_days DESC
+LIMIT 10
+```
