@@ -1,6 +1,18 @@
 # TOP N 问题
-![Alt Text]()
-
+![Alt Text](TOP N.png)
+```ruby
+WITH province_user_stats AS(
+  SELECT province, user_id, SUM(order_amount) AS total_amount, COUNT(order_id) AS order_count,
+         ROW_NUMBER() OVER(PARTITON BY province ORDER BY SUM(order_amount) DESC, COUNT(order_id) DESC) AS rank_in_province
+  FROM orders
+  WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30'
+  GROUP BY province, user_id
+)
+SELECT province, user_id, rank_in_province, total_amount, order_count
+FROM province_user_stats
+WHERE rank_in_province <= 10
+ORDER BY province, rank_in_province ASC
+```
 
 
 
