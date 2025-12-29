@@ -2,8 +2,9 @@
 ![Alt Text](https://github.com/Aeon0630/sql_-/blob/main/TOP%20N.png)
 ```ruby
 WITH province_user_stats AS(
-  SELECT province, user_id, SUM(order_amount) AS total_amount, COUNT(order_id) AS order_count,
-         ROW_NUMBER() OVER(PARTITON BY province ORDER BY SUM(order_amount) DESC, COUNT(order_id) DESC) AS rank_in_province
+  SELECT
+    province, user_id, SUM(order_amount) AS total_amount, COUNT(order_id) AS order_count,
+    ROW_NUMBER() OVER(PARTITON BY province ORDER BY SUM(order_amount) DESC, COUNT(order_id) DESC) AS rank_in_province
   FROM orders
   WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30'
   GROUP BY province, user_id
