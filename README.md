@@ -32,11 +32,53 @@ OEDER BY user_id ASC
 
 
 # 存留率问题
-
-user_login_info一张表：user_id  login_time  
+![Alt Text](https://github.com/Aeon0630/sql_-/blob/main/%E5%AD%98%E7%95%99%E7%8E%87.png)
+将题目中的6月注册改为6月首次登录
+### 1.整个月的存留率
 ```ruby
-(SELECT user_id,MIN(date(login_time)) AS first_login_date FROM user_login_info GROUP BY user_id)
-
+WITH
+user_register AS(
+  SELECT
+    user_id, MIN(login_date) AS register_day
+  FROM user_login_events
+  WHERE login_date BETWEEN '2025-06-01' AND '2025-06-30'
+  GROUP BY user_id
+)
+retained_users AS(
+  SELECT
+    ur.user_id, ur.register_day,
+    CASE WHEN ule.login_date = DATE_ADD(ur.register_day, INTERVAL 7 DAY) THEN 1 ELSE 0 END AS is_retained
+  FROM user_register ur
+  LEFT JOIN user_login_events ule
+    ON ur.user_id = ule.user_id AND ule.login_date = DATE_ADD(ur.register_day, INTERVAL 7 DAY)
+)
+SELECT
+  SUM(is_retained)/COUNT(DISTINCT user_id) AS retain_rate_7d
+FROM retained_users
+```
+### 2.本月中每一天的存留率
+```ruby
+WITH
+user_register AS(
+  SELECT
+    user_id, MIN(login_date) AS register_day
+  FROM user_login_events
+  WHERE login_date BETWEEN '2025-06-01' AND '2025-06-30'
+  GROUP BY user_id
+)
+retained_users AS(
+  SELECT
+    ur.register_day,
+    COUNT(DISTINCT ur.user_id) AS new_users,
+    COUNT(DISTINCT ule.user_id) AS retained_users
+  FROM user_register ur
+  LEFT JOIN user_login_events ule
+    ON ur.user_id = ule.user_id AND ule.login_date = DATE_ADD(ur.register_day, INTERVAL 7 DAY)
+)
+SELECT
+  register_day, new_users, retained_users,
+  ROUND(retained_users/new_users*100, 2) AS retain_rate_7d
+FROM retained_users
 ```
 
 
