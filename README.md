@@ -15,6 +15,20 @@ ORDER BY province, rank_in_province ASC
 ```
 
 
+# 行列转换问题
+![Alt Text](https://github.com/Aeon0630/sql_-/blob/main/%E8%A1%8C%E5%88%97%E8%BD%AC%E6%8D%A2.png)
+```ruby
+SELECT
+  user_id,
+  SUM(CASE WHEN shop_id = 'A' THEN order_amount ELSE 0 END) AS A,
+  SUM(CASE WHEN shop_id = 'B' THEN order_amount ELSE 0 END) AS B,
+  SUM(CASE WHEN shop_id = 'C' THEN order_amount ELSE 0 END) AS C
+FROM orders
+WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30' AND shop_id IN ('A','B','C')
+GROUP BY user_id
+OEDER BY user_id
+```
+
 
 # 存留率问题
 
