@@ -78,7 +78,10 @@ retained_users AS(
 )
 SELECT
   register_day, new_users, retained_users,
-  ROUND(retained_users/new_users*100, 2) AS retain_rate_7d
+  CASE
+    WHEN new_users > 0 THEN ROUND(retained_users/new_users*100, 2)
+    ELSE 0
+  END AS retain_rate_7d
 FROM retained_users
 ```
 
