@@ -74,6 +74,7 @@ retained_users AS(
   FROM user_register ur
   LEFT JOIN user_login_events ule
     ON ur.user_id = ule.user_id AND ule.login_date = DATE_ADD(ur.register_day, INTERVAL 7 DAY)
+  GROUP BY ur.register_day
 )
 SELECT
   register_day, new_users, retained_users,
